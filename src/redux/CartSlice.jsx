@@ -1,167 +1,79 @@
-import { useSelector, useDispatch }
-from "react-redux";
+import { createSlice } from "@reduxjs/toolkit";
 
-import {
- increaseQty,
- decreaseQty,
- removeItem
-}
-from "../redux/CartSlice";
+const initialState = {
+  cartItems: []
+};
 
-function CartItem(){
+const cartSlice = createSlice({
 
- const items =
- useSelector(
-  state => state.cart.items
- );
+  name: "cart",
 
- const dispatch = useDispatch();
+  initialState,
 
- // separate function for total calculation
- const calculateTotal = () => {
+  reducers: {
 
-  return items.reduce(
+    addItem: (state, action) => {
 
-   (total,item) =>
+      const item = state.cartItems.find(
+        plant => plant.id === action.payload.id
+      );
 
-    total +
-    (item.price * item.quantity)
+      if(item){
 
-  ,0);
+        item.quantity += 1;
 
- };
+      }
 
- const handleDecrease = (id, qty) => {
+      else{
 
-  if(qty === 1){
+        state.cartItems.push({
+          ...action.payload,
+          quantity: 1
+        });
 
-   dispatch(removeItem(id));
+      }
 
-  }
-  else{
+    },
 
-   dispatch(decreaseQty(id));
+    removeItem: (state, action) => {
 
-  }
+      state.cartItems =
+      state.cartItems.filter(
+        plant => plant.id !== action.payload
+      );
 
- };
+    },
 
- return(
+    updateQuantity: (state, action) => {
 
-  <div>
+      const { id, amount } = action.payload;
 
-   <h1>
-    Shopping Cart 🛒
-   </h1>
+      const item = state.cartItems.find(
+        plant => plant.id === id
+      );
 
-   {
+      if(item){
 
-    items.map(item=>(
+        item.quantity += amount;
 
-     <div key={item.id}>
+      }
 
-      <img
-       src={item.img}
-       width="100"
-      />
-
-      <h3>
-       {item.name}
-      </h3>
-
-      <p>
-       Price: ₹{item.price}
-      </p>
-
-      <p>
-       Quantity:
-       {item.quantity}
-      </p>
-
-      <p>
-
-       Total:
-
-       ₹{item.price * item.quantity}
-
-      </p>
-
-      <button
-
-       onClick={()=>
-        dispatch(
-         increaseQty(item.id)
-        )
-       }
-
-      >
-
-       +
-
-      </button>
-
-      <button
-
-       onClick={()=>
-        handleDecrease(
-         item.id,
-         item.quantity
-        )
-       }
-
-      >
-
-       -
-
-      </button>
-
-      <button
-
-       onClick={()=>
-        dispatch(
-         removeItem(item.id)
-        )
-       }
-
-      >
-
-       Delete
-
-      </button>
-
-     </div>
-
-    ))
-
-   }
-
-   <h2>
-
-    Cart Total:
-    ₹{calculateTotal()}
-
-   </h2>
-
-   <button
-
-    onClick={()=>
-
-     alert(
-      "Coming Soon"
-     )
+      // remove item if quantity becomes 0
+      state.cartItems =
+      state.cartItems.filter(
+        plant => plant.quantity > 0
+      );
 
     }
 
-   >
+  }
 
-    Checkout
+});
 
-   </button>
+export const {
+  addItem,
+  removeItem,
+  updateQuantity
+} = cartSlice.actions;
 
-  </div>
-
- );
-
-}
-
-export default CartItem;
+export default cartSlice.reducer;
