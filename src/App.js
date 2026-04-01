@@ -1,10 +1,36 @@
-import { BrowserRouter as Router, Routes, Route }
+import { BrowserRouter as Router, Routes, Route, Link }
 from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import ProductList from "./components/ProductList";
 import CartItem from "./components/CartItem";
 import AboutUs from "./components/AboutUs";
+
+function Home(){
+
+ return(
+
+  <div className="home">
+
+   <h1>
+    Welcome to Paradise Nursery 🌿
+   </h1>
+
+   <Link to="/plants">
+
+    <button>
+
+     Get Started
+
+    </button>
+
+   </Link>
+
+  </div>
+
+ );
+
+}
 
 function App(){
 
@@ -18,6 +44,11 @@ function App(){
 
     <Route
     path="/"
+    element={<Home/>}
+    />
+
+    <Route
+    path="/plants"
     element={<ProductList/>}
     />
 
