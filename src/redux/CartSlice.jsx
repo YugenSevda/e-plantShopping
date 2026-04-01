@@ -1,84 +1,167 @@
-import { createSlice }
-from "@reduxjs/toolkit";
+import { useSelector, useDispatch }
+from "react-redux";
 
-const cartSlice = createSlice({
+import {
+ increaseQty,
+ decreaseQty,
+ removeItem
+}
+from "../redux/CartSlice";
 
- name:"cart",
+function CartItem(){
 
- initialState:{
-  items:[]
- },
+ const items =
+ useSelector(
+  state => state.cart.items
+ );
 
- reducers:{
+ const dispatch = useDispatch();
 
-  addItem:(state,action)=>{
+ // separate function for total calculation
+ const calculateTotal = () => {
 
-   const item = state.items.find(
-    i => i.id === action.payload.id
-   );
+  return items.reduce(
 
-   if(item){
+   (total,item) =>
 
-    item.quantity += 1;
+    total +
+    (item.price * item.quantity)
 
-   }
-   else{
+  ,0);
 
-    state.items.push({
-     ...action.payload,
-     quantity:1
-    });
+ };
 
-   }
+ const handleDecrease = (id, qty) => {
 
-  },
+  if(qty === 1){
 
-  removeItem:(state,action)=>{
+   dispatch(removeItem(id));
 
-   state.items =
-   state.items.filter(
-    item => item.id !== action.payload
-   );
+  }
+  else{
 
-  },
-
-  increaseQty:(state,action)=>{
-
-   const item =
-   state.items.find(
-    i => i.id === action.payload
-   );
-
-   item.quantity +=1;
-
-  },
-
-  decreaseQty:(state,action)=>{
-
-   const item =
-   state.items.find(
-    i => i.id === action.payload
-   );
-
-   if(item.quantity>1){
-
-    item.quantity -=1;
-
-   }
+   dispatch(decreaseQty(id));
 
   }
 
- }
+ };
 
-});
+ return(
 
-export const {
+  <div>
 
- addItem,
- removeItem,
- increaseQty,
- decreaseQty
+   <h1>
+    Shopping Cart 🛒
+   </h1>
 
-} = cartSlice.actions;
+   {
 
-export default cartSlice.reducer;
+    items.map(item=>(
+
+     <div key={item.id}>
+
+      <img
+       src={item.img}
+       width="100"
+      />
+
+      <h3>
+       {item.name}
+      </h3>
+
+      <p>
+       Price: ₹{item.price}
+      </p>
+
+      <p>
+       Quantity:
+       {item.quantity}
+      </p>
+
+      <p>
+
+       Total:
+
+       ₹{item.price * item.quantity}
+
+      </p>
+
+      <button
+
+       onClick={()=>
+        dispatch(
+         increaseQty(item.id)
+        )
+       }
+
+      >
+
+       +
+
+      </button>
+
+      <button
+
+       onClick={()=>
+        handleDecrease(
+         item.id,
+         item.quantity
+        )
+       }
+
+      >
+
+       -
+
+      </button>
+
+      <button
+
+       onClick={()=>
+        dispatch(
+         removeItem(item.id)
+        )
+       }
+
+      >
+
+       Delete
+
+      </button>
+
+     </div>
+
+    ))
+
+   }
+
+   <h2>
+
+    Cart Total:
+    ₹{calculateTotal()}
+
+   </h2>
+
+   <button
+
+    onClick={()=>
+
+     alert(
+      "Coming Soon"
+     )
+
+    }
+
+   >
+
+    Checkout
+
+   </button>
+
+  </div>
+
+ );
+
+}
+
+export default CartItem;
