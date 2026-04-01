@@ -1,138 +1,162 @@
-import { useSelector,
-useDispatch }
-
-from "react-redux";
-
-import {
-
- increaseQty,
- decreaseQty,
- removeItem
-
-}
-
-from "../redux/CartSlice";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { removeItem, updateQuantity } from "../redux/CartSlice";
+import { Link } from "react-router-dom";
 
 function CartItem(){
 
- const items =
- useSelector(
-  state=> state.cart.items
+ const cartItems = useSelector(
+  state => state.cart.cartItems
  );
 
  const dispatch = useDispatch();
 
- const total =
- items.reduce(
+ function increaseQty(id){
 
- (sum,item)=>
+  dispatch(
+   updateQuantity({
+    id:id,
+    amount:1
+   })
+  );
 
- sum +
- item.price *
- item.quantity
+ }
 
- ,0);
+ function decreaseQty(id){
+
+  dispatch(
+   updateQuantity({
+    id:id,
+    amount:-1
+   })
+  );
+
+ }
+
+ function handleRemove(id){
+
+  dispatch(removeItem(id));
+
+ }
+
+ function totalAmount(){
+
+  return cartItems.reduce(
+
+   (total,item)=>
+
+   total + item.price*item.quantity,
+
+   0
+
+  );
+
+ }
+
+ function handleCheckout(){
+
+  alert("Checkout Successful 🪴");
+
+ }
 
  return(
 
   <div>
 
-   <h1>
+   <h2>Shopping Cart</h2>
 
-    Shopping Cart 🛒
+   {cartItems.map((item)=>(
 
-   </h1>
+    <div key={item.id}>
 
-   {
-
-    items.map(item=>(
-
-     <div key={item.id}>
-
-      <img
+     <img
       src={item.img}
-      width="100"
-      />
+      width="120"
+     />
 
-      <h3>
+     <h4>{item.name}</h4>
 
-       {item.name}
+     <p>Price: ${item.price}</p>
 
-      </h3>
+     <p>Quantity: {item.quantity}</p>
 
-      <p>
+     <p>
 
-       ₹{item.price}
+      Total:
 
-      </p>
+      ${item.price*item.quantity}
 
-      <p>
+     </p>
 
-       Quantity:
-       {item.quantity}
-
-      </p>
-
-      <button
+     <button
 
       onClick={()=>
-       dispatch(
-        increaseQty(item.id)
-       )
+       increaseQty(item.id)
       }
 
-      >
+     >
 
-       +
+      +
 
-      </button>
+     </button>
 
-      <button
+     <button
 
       onClick={()=>
-       dispatch(
-        decreaseQty(item.id)
-       )
+       decreaseQty(item.id)
       }
 
-      >
+     >
 
-       -
+      -
 
-      </button>
+     </button>
 
-      <button
+     <button
 
       onClick={()=>
-       dispatch(
-        removeItem(item.id)
-       )
+       handleRemove(item.id)
       }
 
-      >
+     >
 
-       Delete
+      Delete
 
-      </button>
+     </button>
 
-     </div>
+    </div>
 
-    ))
+   ))}
 
-   }
+   <h3>
 
-   <h2>
+    Grand Total:
 
-    Total = ₹{total}
+    ${totalAmount()}
 
-   </h2>
+   </h3>
 
-   <button>
+   <button
+
+    onClick={handleCheckout}
+
+   >
 
     Checkout
-    (Coming Soon)
 
    </button>
+
+   <br/><br/>
+
+   <Link to="/plants">
+
+    <button>
+
+     Continue Shopping
+
+    </button>
+
+   </Link>
 
   </div>
 
