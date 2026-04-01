@@ -10,10 +10,12 @@ function Home(){
 
  return(
 
-  <div className="home">
+  <div>
 
    <h1>
+
     Welcome to Paradise Nursery 🌿
+
    </h1>
 
    <Link to="/plants">
